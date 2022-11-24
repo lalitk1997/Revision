@@ -12,7 +12,7 @@ Iterators -> In java iterators are used to iterate over the Collections.
 Fail-fast iterators ->
 It throws ConcurrentModificationException, if there is structural modification of the collection.
 Structural modifications include adding, removing any element from the collection while a thread is iterating
-    over the collection.
+over the collection.
 ArrayList, HashMap classes are some example of fail-fast iterator.
 Not reliable, only used for debug purposes.
 

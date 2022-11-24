@@ -3,11 +3,13 @@ package Que_2;
 // Ques 2: Why collections are used in java, if everything can be implemented using Array?
 
 /*
-Collections provide in-buit data-structure implementable classes.
-Standardized implementation of popular data-structure allows programmers to re-use already optimized methods.
-Support of multiple optimized methods for each data-structure.
-Ease development process for developers and code is more reliable, efficient and optimized.
-Giving example of ArrayList and associated implemented methods.
+ Advantages of using collections :
+ 1. Collections are dynamic. Can increase size.
+ 2. Collection consumes less memory but also have lowe performance.
+ 3. Collection can hold both homogeneous and heterogeneous elements.
+ 4. Collection can hold only Object type data. (not primitive).
+ 5. Collections have implementations of all data-structures in form of classes and methods.
+
  */
 
 import java.util.ArrayList;

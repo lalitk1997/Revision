@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 // How to convert a Array into ArrayList and vice-versa ?
+/*
+1. Can use Arrays.asList() method to convert an array into arraylist.
+2. Can ise List.toArray() method to convert an arraylist to array.
+ */
 // Write example.
 public class Main {
     public static void main(String[] args) {

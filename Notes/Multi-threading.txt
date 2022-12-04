@@ -1,0 +1,12 @@
+Multi-threading
+
+It's a process of executing two or more threads simultaneously for maximum utilization of the CPU.
+A thread in java is a light-weight process requiring fewer resources to create and share the process resource.
+Threads use a shared memory area which helps to save memory, content-switching between the threads is a bit faster.
+
+Thread Life-Cycle
+1. New
+2. Runnable
+3. Running
+4. Non-Runnable
+5. Terminated

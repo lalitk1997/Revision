@@ -1,0 +1,24 @@
+@Autowire Annotation
+
+Used for injecting dependency.
+Promotes loose coupling.
+Type of Autowire-annotation XML Approach -
+1. byName
+    - In case of byName autowiring mode, bean id and reference name must be same.
+    - In Class A -> B b;
+    - Internally uses setter injection.
+        <bean id="b" class="org.sssit.B"></bean>
+        <bean id="a" class="org.sssit.A" autowire="byName"></bean>
+2. byType
+    - In case of byType autowiring mode, bean id and reference name may be different.
+    But there must be only one bean of a type.
+    - Internally uses setter injection.
+          <bean id="b1" class="org.sssit.B"></bean>
+          <bean id="a" class="org.sssit.A" autowire="byType"></bean>
+3. constructor
+    - In case of constructor autowiring mode, spring container injects the dependency
+    by highest parameterized constructor.
+    - <bean id="b" class="org.sssit.B"></bean>
+      <bean id="a" class="org.sssit.A" autowire="constructor"></bean>
+4. autodetect
+    - deprecated 3.x

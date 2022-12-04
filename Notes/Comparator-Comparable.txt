@@ -1,0 +1,4 @@
+Comparable
+    - uses compareTo (same class) -> implements Comparable Interface
+Comparator u
+    - ses compare(diff class) -> implements Comparator Interface

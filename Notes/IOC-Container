@@ -1,0 +1,72 @@
+Inversion-Of-Control (IOC Container)
+1. Spring IOC Container is the core of Spring Framework.
+2. It's functionality includes :
+	- Creating bean-objects for classes which are in scope (@ComponentScan).
+	- Managing the bean-objects.
+	- Helping in making spring application to be configurable. (via XML approach, @annotations and Configure Class)
+	- Managing dependencies. (dependency injection when required)
+	- Framework for implementing automated dependency injection.
+	- Type of IOC Container :
+	    ApplicationContext
+        BeanFactory
+
+ex :-
+
+public Interface Sim {
+	void calling();
+	void data();
+}
+
+public class Airtel implements Sim {
+	@Override
+	public void calling(){
+		sout("Airtel Calling");
+	}
+
+	@Override
+	public void data(){
+		sout("Airtel Data");
+	}
+}
+
+public class Jio implements Sim {
+	@Override
+	public void calling(){
+		sout("Airtel Calling");
+	}
+
+	@Override
+	public void data(){
+		sout("Airtel Data");
+	}
+}
+
+MAIN METHOD : TO ACHIEVE RUNTIME POLYMORPHISM
+
+public class Mobile{
+	psvm(){
+		Sim sim = new Jio();
+		sim.calling();
+		sim.data();
+	}
+}
+
+XML
+<bean id="sim" class="Jio"></bean>
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+ 
+public class Mobile {
+    public static void main(String[] args) {
+        // Using ApplicationContext tom implement Spring IoC
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("beans.xml");
+         
+        // Get the bean
+        Sim sim = applicationContext.getBean("sim", Sim.class);
+         
+        // Calling the methods
+        sim.calling();
+        sim.data();
+    }
+}

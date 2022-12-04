@@ -1,0 +1,21 @@
+1. HashMap
+    - HashMap internally contains an array of Node and Node can represent a class having following :
+        int hash
+        K key
+        V value
+        Node next
+    - Hashing is the process of converting an object into integer using the method hashCode().
+    - Important to write hashCode() method properly for lesser collision and better performance of hashmap.
+    - https://www.geeksforgeeks.org/internal-working-of-hashmap-java/
+
+2. TreeMap
+    - Implementation of Map Interfaces, NavigableMap, SortedMap and AbstractMap class.
+    - Tree Map does not allow null keys (like Map) -> NullPointerException.
+
+3. HashSet
+    - HashMap provide an implementation of Set Interface via use of Hashing.
+
+4. TreeSet
+    - TreeSet provides an implementation of the Set Interface that uses a tree for storage.
+    - Objects are stored in a sorted order. (Ascending Order)
+    - TreeSet uses self-balancing binary search tree, more specifically Red-Black tree.

@@ -1,0 +1,10 @@
+Spring MVC
+
+Java Framework used to develop web applications, based on Model-View-Controller pattern.
+It basically separates different aspects of the application. Like - Business logic, UI Logic and input logic.
+Spring MVC Flow Diagram Includes : -
+1. Request : The first step in the MVC flow is when a request is received by the Dispatcher Servlet.
+2. Dispatcher Servlet : Manages all the incoming requests.
+3. Controller : Controller will process the request based on appropriate methods and will return it to Model Data and View Name.
+4. Model & View : Tt will return the processed data to the Dispatcher Servlet.
+5. View Resolver : Dispatcher Servlet will transfer it to the View Resolver to get the actual view page.

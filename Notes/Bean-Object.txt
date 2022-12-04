@@ -1,0 +1,14 @@
+Bean-Object
+Spring bean is an object which is created, managed and destroyed in spring-container.
+
+@ComponentScan
+1. Annotation used on main class of spring boot application.
+2. Scans the packages and inner-packages for classes and interfaces to register them for autowiring.
+3. Can pass array of arguments for scanning in different packages.
+
+ApplicationContext Container
+1. Spring IOC Container used for creating, configuring, managing beans-objects life-cycle as well as their dependencies.
+2. Two type of containers : -
+	Application Context Container
+	Bean Factory Container (Does not support annotations)
+

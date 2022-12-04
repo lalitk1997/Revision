@@ -1,0 +1,38 @@
+Object Oriented Programming Concepts ->
+1. Abstraction
+It is the process of hiding the implementation details and showing only functionality to user.
+Ex. SMS Delivery system.
+Mainly two ways to achieve Abstraction :-
+-> Abstract Class - (0 to 100%)
+    An abstract class must be declared with abstract keyword.
+    It can have abstract and non-abstract methods.
+    It cannot be instantiated.
+    It can have constructors and static methods.
+    It can have final methods. (Methods which cannot be override in sub-class).
+-> Interfaces - (100%)
+    Used to achieve abstraction.
+    Support functionality of multiple inheritance.
+    Can be used to achieve loose coupling.
+    Cannot be instantiated.
+    Can have abstract, default and static methods. <- Java 8
+
+2. Encapsulation
+It is a process by which data members (variables) and the code (methods/ functions) that acts upon them
+are integrated in a single unit.
+Helpful in achieving data hiding. Other classes will not be able to access private data members.
+Provides control over data via the use of getter and setter methods.
+Ex- Java Bean class is an example of fully encapsulated class.
+
+3. Polymorphism
+Poly+morphism -> many+forms.
+-> Compile-time polymorphism - Method Overloading
+    - Method Overloading - Same method name but different parameters.
+    - Return data-type doesn't support Method Overloading.
+-> Run-time polymorphism - Method Overriding
+    - Overriding the method in subclass, which is already defined in parent class. (possible via Inheritance)
+
+4. Inheritance
+Via inheritance an object acquire all the properties and behaviours of parent Object.
+Provides IS-A relationship (parent-child relationship) between classes.
+Improves code re-usability.
+Multiple inheritance not possible in java via classes.

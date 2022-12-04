@@ -1,0 +1,53 @@
+Tight Coupling :
+1. Means classes and objects are dependent on one another.
+2. Generally, tight coupling is not good because it reduces flexibility and re-usablity of the code.
+3. Changing one object in a tightly coupled application often required changes to a number of other files and objects.
+4. It is not manageable in large scale applications.
+
+ex:- Subject class is dependent on topic class.
+
+class Subject {
+	Topic t = new Topic();
+	public void startReading() {
+		t.understand();
+	}
+}
+
+class Topic {
+	public void understand() {
+		sout("Tight coupling");
+	}
+}
+
+Loose Coupling :
+1. It is a design goal to reduce the interdependencies between components of a system.
+2. Goal is reducing the risk that change in one component will require changes in any other components.
+3. To improve developed system flexibility, maintainability and stability.
+4. It makes use of interfaces to achieve loose coupling.
+
+ex:-
+
+public Interface Topic{
+	void understand();
+}
+
+public Class Topic1 implements Topic{
+	@Override
+	public void understand(){
+		sout("Got it");
+	}
+}
+
+public Class Topic2 implements Topic{
+	@Override
+	public void understand(){
+		sout("Understood!");
+	}
+}
+
+public Class Subject(){
+	psvm(){
+		Topic t = new Topic1();
+		t.understand();
+	}
+}

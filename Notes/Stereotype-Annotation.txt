@@ -1,0 +1,8 @@
+Stereotype Annotation
+
+1. Stereotype annotation include
+	@Component -> main stereotype annotation, other annotation derived from stereotype annotation are : -
+	@Service -> classes which are holding the business logic.
+	@Controller -> classes where API's are exposed to send and receive data from  user.
+	@Repository -> classes which are dealing with CRUD operations with the database.
+2. These annotations are used to create spring-bean automatically in the application context.

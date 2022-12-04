@@ -1,0 +1,22 @@
+Exceptions
+
+-> Exception Handling
+    1. Powerful mechanism to handle run-time error, for normal flow of the application.
+    2. Ex, SQLException, ClassNotFound, IOException, Arithmetic Exception etc.
+    3. Helps in maintaining normal flow of program without abnormal termination.
+    4.                              Throwable
+                    ------------------------------------------
+               Exception (Checked)                          Error
+      --------------------
+    IOExe    SQLExe   RuntimeExe (Un-checked)
+                ------------------------------
+             Arithmetic NullPointer NumberFormat
+    5. Type of Exceptions :
+    -> Checked Exception - Classes that directly inherit the Throwable class except RuntimeException.
+                         - Checked exceptions are checked at compile time.
+                         - IOException, SQLException.
+    -> Unchecked Exception - Classes that inherit RuntimeException are known as Unchecked Exception.
+                           - Unchecked exceptions are not checked at compile time.
+                           - Arithmetic, NullPointer.
+    -> Error - Errors are irrecoverable.
+             - OutOfMemoryError, VirtualMachineError etc.

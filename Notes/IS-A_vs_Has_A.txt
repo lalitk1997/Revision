@@ -1,0 +1,22 @@
+Association
+Aggregation
+Composition
+
+Has-A Relation:
+-> Has-A relation is also called as composition.
+-> Aditionally utilized for code resubality.
+-> Example of one class has a reference to an ocassion of another class.
+-> EX : A vehicle has a motor
+-> Is is a uni-directional in nature. i.e one way relationship.
+-> Generally, Can build Has-A relationship between 2 classes by mentioning one class instance into other class data memebers.
+
+IS-A
+
+IS-A Relationship:
+-> Is a relationship is wholly related to inheritance,
+-> It can be achieved using extends keywords.
+-> Aditionally used for the code reusability and to avoid code redundancy.
+-> Uni-directional in nature.
+-> Tightly couples means changing one entity will effect the another entity.
+
+

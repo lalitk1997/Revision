@@ -1,0 +1,12 @@
+Spring Framework provides us with some special annotations.
+These annotations are used to create Spring beans automatically in the application context.
+@Component annotation is the main Stereotype Annotation.
+Some other stereotype annotation derived from @Component are :-
+-> @Service
+	It is used to indicate that the class on which this annotation is applied, have business logic written into it.
+	Also, this annotation is used on all classes of service layer(business logic layer).
+-> Repository
+	Classes which are dealing with crud opearations are specified with Repository annotation.
+-> Controller 
+	Class with @Controller are reponsible for handling the user request and return the appropriate response.
+	It is mostly used with REST Web Services. 

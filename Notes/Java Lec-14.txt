@@ -1,0 +1,20 @@
+
+Java Lecture - 14
+
+Spring MVC :-
+
+Web-Server vs Application Server
+
+
+Browser -> (Request) -> Dispatcher Servlet (Front Controller Servlet) ->
+Handler Mapping -> req/res -> Handler/Controller Class -> Service -> DAO
+-> View Resolver -> Response to Browser/Client.
+
+@Transactional Annotation
+
+WEB-INF/views -> Location of JSP
+
+Configuration file -> app.config
+
+
+

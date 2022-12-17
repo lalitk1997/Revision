@@ -1,0 +1,106 @@
+Spring Security 
+
+Lecture - 1
+What is spring security really all about?
+-> Provides application level security
+-> Acts as a security guard for each incoming request and asks
+	-> who are you?
+	-> what do you want?
+-> What spring security can do?
+	-> Username/password authentication.
+	-> SSO (Single Sign On) / Okta / LDAP
+	-> App Level Authorization
+	-> Intra App Authorization like OAuth
+	-> Microservice security (using tokens, JWT)
+	-> Method Level Security
+
+Lecture - 2
+-> Five Spring Security Concepts 
+	-> Authentication
+	-> Authorization
+	-> Principal
+	-> Granted Authority
+	-> Roles
+-> Knowledge based authentication 
+	-> Password, Pincode, Answer to a secret ques
+-> Possession based authentication
+	-> Phone / Text Message
+	-> Key cards and badges
+	-> Access token device
+-> Multifactor Authentication
+	-> Knowledge based authentication + Possession based authentication
+-> Authentication -> Who is the user ?
+-> Authorization -> Are they allowed to do this ?
+-> Principal -> Currently logged in user.
+-> Granted Authority
+-> Roles -> Group of authorities assigned to each roles
+
+
+Lecture-3
+Adding Spring Security
+-> spring-boot-starter-security dependency
+-> by default have to login 
+	-> User 
+	-> Password provided in terminal 
+-> filters (core concept associated with servlet technology) 
+-> servlet are associated with resource url
+	-> based upon the resource url servlets are fetched.
+	-> filters acts as a moderator in between client requests and servlets.
+-> Default behaviour of spring security :
+	-> Adds mandatory authentication for URLs
+	-> Adds login form
+	-> Handles login error
+	-> Creates a user ans sets a default password
+-> application.properties (Configure default user -)
+	-> spring.security.user.name=foo
+	-> spring.security.user.password=foo
+
+Lecture - 4
+How to configure Spring Security Authentication
+-> Hardcoding some user in memory for authentication
+-> Authentication Manager : Does the authentication -> (Method) -> authenticate()
+-> AuthenticationManagerBuilder Class (Use for authentication config)	
+	-> Get hold of AuthenticationManagerBuilder
+		-> Class Configure -> extend this class
+		-> AuthManagerBuilder -> Override this method.
+	-> Set the configuration on it
+-> Github link :- https://github.com/koushikkothagal/spring-boot-security 
+-> SecurityConfiguration -> Class Create extends WebSecurityConfigurerAdapter
+-> @EnableWebSecurity for SecurityConfiguration
+@Override
+protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+	auth.inMemoryAuthentication()
+		.withUser("blah")
+		.password("blah")
+		.roles("user")
+		.and()
+		.withUser("foo")
+		.password("foo")
+		.roles("admin")
+}
+-> Passwords are not stored in plain text.
+-> How to set a password encode ?
+	-> Just expose an @Bean of type PasswordEncode!
+	@Bean
+	public PasswordEncode getPasswordEncode(){
+		return NoOpPasswordEncoder.getInsatnce();
+	}
+
+Lecture-5
+How to configure authorization in Spring Security
+Starting point
+A Spring Boot application with
+- Spring Security dependency added
+- In-Memory authentication configured
+
+=> /      -> All (unauthenticated)
+=> /user  -> USER and ADMIN role
+=> /admin -> ADMIN role
+-> Object Type HttpSecurity to configure
+-> extend WebSecurityConfigureAdapter
+protected void configure(HttpSecurity http) throws Exception {
+	// Use-of-method-chaining
+	
+}
+
+

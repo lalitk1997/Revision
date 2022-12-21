@@ -3,6 +3,16 @@ Spring Security
 Lecture - 1
 What is spring security really all about?
 -> Provides application level security
+	like
+	-> Login and Logout functionality
+	-> Allow/block access to URLs to logged in users.
+	-> Allow/block access to URLs to logged in users AND with certain roles.
+-> Handles common vulnerabilities 
+	-> Session fixation
+		-> Session Fixation is an attack that permits an attacker to hijack a valid user session.
+	-> Clickjacking
+		-> An attack that fools users into thinking they are clicking on one thing when they are actually clicking on another. 
+	-> Cross site request forgery
 -> Acts as a security guard for each incoming request and asks
 	-> who are you?
 	-> what do you want?
@@ -18,8 +28,8 @@ Lecture - 2
 -> Five Spring Security Concepts 
 	-> Authentication
 	-> Authorization
-	-> Principal
-	-> Granted Authority
+	-> Principal -> Currently Logged-In User
+	-> Granted Authority -> User is authorised to access URLs
 	-> Roles
 -> Knowledge based authentication 
 	-> Password, Pincode, Answer to a secret ques
@@ -67,6 +77,7 @@ How to configure Spring Security Authentication
 -> Github link :- https://github.com/koushikkothagal/spring-boot-security 
 -> SecurityConfiguration -> Class Create extends WebSecurityConfigurerAdapter
 -> @EnableWebSecurity for SecurityConfiguration
+-> Always deal with hashed pawwords! 
 @Override
 protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 	auth.inMemoryAuthentication()
@@ -80,7 +91,7 @@ protected void configure(AuthenticationManagerBuilder auth) throws Exception{
 }
 -> Passwords are not stored in plain text.
 -> How to set a password encode ?
-	-> Just expose an @Bean of type PasswordEncode!
+	-> Just expose an @Bean of type PasswordEncoder!
 	@Bean
 	public PasswordEncode getPasswordEncode(){
 		return NoOpPasswordEncoder.getInsatnce();
@@ -103,4 +114,20 @@ protected void configure(HttpSecurity http) throws Exception {
 	
 }
 
+Double Shift -> To search for all classes
 
+1. Spring security is looking for bean/Object of type SecurityFilterChain (Interface)
+2. SecurityFilterChainConfiguration -> Available here
+3. Functionality of Basic Auth
+	Client 		Backend
+		------------>  HTTP Request(GET)
+						|  Checks Authorisation
+		<------------  Returns 401 UNAUTHORIZED
+		
+		------------>  HTTP Request (GET) => Basic64 username:password
+						|  Checks username:password
+		<------------  Responds: 200 OK
+4. Spring Security picks SecurityFilterChain Bean provided by us rather than default.
+5. Manually Configuring the SecurityConfiguration Class
+6. Testing spring security using POSTMAN -> Basic authentication
+7. Spring Boot Version 2.7.4

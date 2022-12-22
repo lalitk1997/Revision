@@ -103,16 +103,206 @@ Starting point
 A Spring Boot application with
 - Spring Security dependency added
 - In-Memory authentication configured
-
+Default behaviour -> All APIs need authentication
+What we want 
+-> Different APIs having different access requirenments
 => /      -> All (unauthenticated)
 => /user  -> USER and ADMIN role
 => /admin -> ADMIN role
 -> Object Type HttpSecurity to configure
 -> extend WebSecurityConfigureAdapter
 protected void configure(HttpSecurity http) throws Exception {
-	// Use-of-method-chaining
-	
+	// Use-of-method-chaining	
 }
+-> hasRole("USER")
+-> hasAnyRole("USER", "ADMIN")
+-> /** all URLs at current-level and nested levels in it.
+Controller :-
+
+    @GetMapping("/")
+    public ResponseEntity<String> testFunc(){
+        String str = "Welcome to Spring Security";
+        return new ResponseEntity<>(str, HttpStatus.OK);
+    }
+    @GetMapping("/user")
+    public ResponseEntity<String> home(){
+        String message = "Welcome home : user!";
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+    @GetMapping("/admin")
+    public ResponseEntity<String> admin(){
+        String message = "Welcome to admin dashboard.";
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/").permitAll()
+                .and()
+                .formLogin();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+        /*
+            Set yor configuration on the auth object
+            In-Memory -> Authentication
+         */
+        auth.inMemoryAuthentication()
+                .withUser("user")
+                .password("password")
+                .roles("USER")
+                .and()
+                .withUser("Mr Bean")
+                .password("Teddy")
+                .roles("ADMIN");
+    }
+
+Lecture-6
+Filter -> 
+1. Filter is a construct which intercepts the incoming requests.
+2. If user/client have the permission requests are not allowed to passed through to servelets.
+3. Delegating filter proxy -> 5 or 6 internal filters for different purposes
+	ex. AuthenticationFilter which authenticates the user (intercepts authentication req)
+Authentication ->
+				 ___________________
+				|				|	
+Input 			|				|
+--->				|				|
+(Credentials) 		|				|
+				|  Authentication	|
+Output			|				|
+<---				|				|
+Princupal			|				|
+				|__________________|		
+
+AuthenticationProvider -> authenticate()
+
+				 _________________________
+				|                         | <---------------- Input
+Input 			|					  |
+--->				|					  |				Authentication Obj
+(Credentials) 		|                         |					type
+				|AuthenticationProvider   |			      Credentials
+Output			|	authenticate()		  |
+<---				|					  |	
+Princupal			|					  |	
+				|_________________________| -----------------> Output
+													Authentication Obj
+														type
+													  Principal
+
+Some methods : Interface Authentication
+getAuthorities()
+-> Set by an AuthenticationManager to indicate the authorities that the the principal has been granted
+getCredentials()
+-> The credentials that prove the principal is correct
+getDetails()
+-> Store additional details about the authentication request
+getPrincipal()
+-> The identify of the principal being authenticated
+isAuthenticated()
+-> Boolean
+
+There can be multiple AuthenticationProvider() in a web application for based on authentication type :
+1. Password Based Authentication
+2. OAuth based authentication
+3. LDAP Authentication
+			
+								------------> AuthenticationProvider						
+								|				authenticate()
+								|				supports() (Supports which type of authentication)
+								| 
+Provide Manager 					|
+  implements						|
+AuthenticationManager   --------------------------> AuthenticationProvider
+	authenticate()					|				authenticate()
+		^						|				supports() (Supports which type of authentication)
+		|						|
+input	|						|
+credential 						------------> AuthenticationProvider						
+		|										authenticate()
+output	|										supports() (Supports which type of authentication)
+principal						
+		|											|	All auth							
+		|											|
+		|								    username	| User
+		|											|Object
+		|											|
+		v											v
+	AuthenticationFilter							Identity Store
+				|								UserDetailsService  loadUserByUserName()
+				|	Principal							(Type UserDetails Obj)
+				v	( After Authentication )
+		takes the Object and save it in the 
+		Thread Context
+		------------------
+		| Thread Local   |
+		| Authentication | 
+		------------------
+Process Flow of the diagram :-
+1. Authentication filter intercepts incoming authentication requests.
+2. It creates Authentication object and passes it to the AuthenticationManager
+3. AuthenticationManager finds the right AuthenticationProvider using method supports().
+4. AM calls the authenticate method on that AuthenticateProvider as passes the authentication object.
+5. AP looks up the corresponding user in the system using the UserDetailService
+6. UserDetails return UserDetails instance.
+
+
+Lecture 7: How to setup JDBC authentication with Spring Security from scratch
+-> Dependency -> Spring-web, Spring Security, H2 Database, JDBC-API
+
+
+
+Lecture 10 What is JWT authorization really about
+-> JWT JSON Web Tokens -> Managing Authorization
+-> HTTP is stateless protocol (no dependence on previous requests.) 
+-> Because HTTP is stateless -> sends HTTP request with the identity
+-> Bank Login -> Accounts 
+	Using Tokens
+	- Session Tokens
+	- JSON WEB Token
+-> Support Ticket (Microsoft Windows Ticket (Support Dept)) Ticket ID
+-> Session Tokens
+	SessionID is generated when a user is authenticated.
+	Server manages SessionID of multiple users in a session table.
+	SessionID in Cookies for sending more requests to server.
+	Assumes that the WEB Application is running on the monolithic server.
+	In case of distributed application : -
+						-----------------> Server
+						|
+    WEB					|	
+Application-------------- Load ---------------> Server
+					Balancer
+						|
+						|
+						-----------------> Server
+	Point 1: Either all server manages a shared cache for session management. (Single point faliure)
+	Point 2: Load Balance keep track of the Session and forward to associated server. (not scalable)
+-> JWT Token (Doctor Prespriction)
+	Each Token is signed in specific format.
+	Server verifies the signature.
+	All the realted info is in the token itlsef.
+	Server does not have manage any user info.
+-> Session Tokens -> Reference Token
+-> JSON WEB Token -> Value Token
+
+Lecture 11 : What is the structure of a JWT (JSON Web Tokens)
+Structure of JWT
+-> value.value.value
+Header.Payload.Signature
+	   Base64
+	  Encoding
+	   Format
+-> Header + Signature (Contains Secret Key) -> Authenticity
+			     Cryptographic Hash
+
+
+
 
 Double Shift -> To search for all classes
 

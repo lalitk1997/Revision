@@ -1,4 +1,4 @@
-package com.security.masai.controller;
+package io.javabrains.springsecurityjdbc.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +12,12 @@ public class TestController {
         String str = "Welcome to Spring Security";
         return new ResponseEntity<>(str, HttpStatus.OK);
     }
-    @GetMapping("/user")
-    public ResponseEntity<String> user(){
-        String message = "Welcome : user!";
+    @GetMapping("/user/url")
+    public ResponseEntity<String> home(){
+        String message = "Welcome home : user!";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
-    @GetMapping("/admin")
+    @GetMapping("/admin/url")
     public ResponseEntity<String> admin(){
         String message = "Welcome to admin dashboard.";
         return new ResponseEntity<>(message, HttpStatus.OK);

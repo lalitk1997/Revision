@@ -1,12 +1,13 @@
-package com.security.masai;
+package io.javabrains.springsecurityjdbc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MasaiApplication {
+public class SpringSecurityJdbcApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(MasaiApplication.class, args);
+		SpringApplication.run(SpringSecurityJdbcApplication.class, args);
 	}
 
 }

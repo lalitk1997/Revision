@@ -169,7 +169,7 @@ Filter ->
 3. Delegating filter proxy -> 5 or 6 internal filters for different purposes
 	ex. AuthenticationFilter which authenticates the user (intercepts authentication req)
 Authentication ->
-				 ___________________
+				____________________
 				|				|	
 Input 			|				|
 --->				|				|
@@ -244,6 +244,7 @@ principal
 		| Thread Local   |
 		| Authentication | 
 		------------------
+
 Process Flow of the diagram :-
 1. Authentication filter intercepts incoming authentication requests.
 2. It creates Authentication object and passes it to the AuthenticationManager
@@ -255,6 +256,336 @@ Process Flow of the diagram :-
 
 Lecture 7: How to setup JDBC authentication with Spring Security from scratch
 -> Dependency -> Spring-web, Spring Security, H2 Database, JDBC-API
+
+SecurityConfiguration.java
+
+package io.javabrains.springsecurityjdbc.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.sql.DataSource;
+
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    /*
+    H2 Database -> DataSource (by Default)
+     */
+    @Autowired
+    DataSource dataSource;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        /*
+        Standard Schema -> Spring Security Provides By Default
+         */
+        /*
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .withDefaultSchema()
+                .withUser(
+                        User.withUsername("user")
+                                .password("password")
+                                .roles("USER")
+                )
+                .withUser(
+                        User.withUsername("admin")
+                                .password("password")
+                                .roles("ADMIN")
+                );
+         */
+        auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                /*
+                For user-defined tables
+                 */
+                .usersByUsernameQuery("select username, password, enabled from users where username = ?")
+                .authoritiesByUsernameQuery("Select username, authority from authorities where username = ?");
+    }
+    /*
+    Authorization
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/").permitAll()
+                .and()
+                .formLogin();
+    }
+    /*
+    Password Encoder
+     */
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
+    }
+}
+
+-> Resources > schema.sql
+create table users(
+username varchar_ignorecase(50) not null primary key,
+password varchar_ignorecase(50) not null,
+enabled boolean not null
+);
+create table authorities(
+username varchar_ignorecase(50) not null,
+authority varchar_ignorecase(50) not null,
+constraint fk_authorities_users foreign key(username) references users(username)
+);
+
+create unique index ix_auth_username on authorities (username, authority);
+
+
+-> Resources > data.sql
+INSERT INTO users (username, password, enabled)
+VALUES('lalit', 'password', true);
+INSERT INTO users (username, password, enabled)
+VALUES('mr bean', 'teddy', true);
+INSERT INTO authorities(username, authority)
+VALUES('lalit', 'ROLE_USER');
+INSERT INTO authorities(username, authority)
+VALUES('mr bean', 'ROLE_ADMIN');
+
+
+
+Lecture 8: Spring Boot + Spring Security with JPA authentication and MySQL from scratch
+Project meta-data ->
+io.javabrains
+spring-security-jpa
+Dependency -> 
+spring web, spring security, spring jpa, mysql driver
+testController ->
+/		-> for all
+/user	-> for user & admin
+/admin	-> for admin
+securityconfiguration ->
+override configure(Auth..ManagerBuilder) Authentication
+override configure(HttpSecurity)	Authorization
+-> Create a service which provides an instance of UserDetailsService to Spring Security
+-> So, Spring Security csn vrify the user details direct from MySQL DB. 
+	Spring Security -> UserDetailsService -> JPA Service -> DB
+-> UserDetailsService : Interface 
+	-> Implements it in MyUserDetailsService Class.
+	-> Override loadByUsername() method.
+-> UserDetails -> Interface 
+	-> Implements it in MyUserDetails Class
+	-> Override all required methods
+
+SecurityConfiguration.java
+package io.javabrains.springsecurityjpa.config;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Autowired
+    UserDetailsService userDetailsServices;
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsServices);
+    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/").permitAll()
+                .and()
+                .formLogin();
+    }
+    @Bean
+    public PasswordEncoder getPasswordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
+    }
+}
+
+TestController.java
+package io.javabrains.springsecurityjpa.controller;
+
+import io.javabrains.springsecurityjpa.entity.User;
+import io.javabrains.springsecurityjpa.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class TestController {
+    @Autowired
+    UserRepository userRepository;
+    @GetMapping("/")
+    public ResponseEntity<String> testFunc2(){
+        String str = "Welcome to Spring Security";
+        return new ResponseEntity<>(str, HttpStatus.OK);
+    }
+    @GetMapping("/user/url")
+    public ResponseEntity<String> home(){
+        String message = "Welcome home : user!";
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+    @GetMapping("/admin/url")
+    public ResponseEntity<String> admin(){
+        String message = "Welcome to admin dashboard.";
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+    @GetMapping("/admin/allUser")
+    public ResponseEntity<List<User>> getAllUser(){
+        List<User> users = userRepository.findAll();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+}
+
+MyUserDetails.java
+package io.javabrains.springsecurityjpa.entity;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class MyUserDetails implements UserDetails {
+    private String userName;
+    private String password;
+    private boolean active;
+    private List<GrantedAuthority> authorities;
+    public MyUserDetails(User user){
+        this.userName = user.getUserName();
+        this.password = user.getPassword();
+        this.active = user.isActive();
+        this.authorities = Arrays.stream(user.getRoles().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+    public MyUserDetails() {
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+    @Override
+    public String getPassword() {
+        return password;
+    }
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+}
+
+User.java
+package io.javabrains.springsecurityjpa.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "user")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String userName;
+    private String password;
+    private boolean active;
+    private String roles;
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public boolean isActive() {
+        return active;
+    }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public String getRoles() {
+        return roles;
+    }
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+}
+
+UserRepository.java
+package io.javabrains.springsecurityjpa.repository;
+
+import io.javabrains.springsecurityjpa.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByUserName(String userName);
+}
+
+Lecture 9: Spring Boot + Spring Security + LDAP 
+-> LDAP : Lightweight Directory Access Protocol
+	-> Industry standard application protocol for accessing and maintaining distributed directory 
+	information service over an internet protocol.
+	-> io.javabrains spring-security-ldap
+	-> Dependency : Spring Web, Spring Security
+	-> unboundid-ldapsdk, spring-ldap-core, spring-security-ldap
+	-> application.properties	
+		spring.ldap.embedded.port = 8389
+						 .ldif = classpath:ldap-data.ldif
+						 .base-dn = dc=springframework,dc=org
+	-> Within resources -> ldap-data.ldif -> copy data
 
 
 
@@ -299,7 +630,89 @@ Header.Payload.Signature
 	  Encoding
 	   Format
 -> Header + Signature (Contains Secret Key) -> Authenticity
+
 			     Cryptographic Hash
+-----           1. UserID/Password		 -------------------
+	|------------------------------------->|
+	|		 4. JWT to Client			 |SERVER
+	|<------------------------------------	 |2. Authentication
+	|		 6. JWT in HTTP Header		 |3. JWT Generation	
+User	|------------------------------------->| 
+	|								 |	
+	|								 |___________________
+------
+  |	5. Saved on Client Side
+  -------->	Local Storage/Cookie
+
+Lecture 12: Soring Boot + Spring Security + JWT from scratch
+Objectives
+1. Create a new authentication API endpoint
+2. Examine every incoming request for valid JWT and authorize
+-> Dependency 1. Spring WEB, 2. Spring Security
+ 
+
+
+
+Lecture 13: What is OAuth really about.
+-> Why OAuth -> Authorization
+-> Created -> a service Authorizing another service.
+-> Print Shop -> Upload and print photos -> shipped to address
+-> Problem : No one stores photo on theur local devices (Google Drive or OneDrive access).
+-> OAuth 2.0 
+-> (Example -> Parking Attendent)
+	Master Car Key
+	Valet Key
+	 ---------------------------> CAR	Service (Photo Print Shop Application)
+	 |						   ^					^	
+	 |						   |					|
+	CAR 						   |  Limited			|
+	Owner					   |	  Access			|	(Token) Limited Access
+	 |						   |	(Valet Key)		|	JWT
+	 |						   |					|
+	 ---------------------------> VALET Service (Google Drive Service)
+	Access delegation
+-> OAuth Flow
+	OAuth Access Token -> Contains user-allowed permissions & Trustable (cannot be tampered)(JWT)
+
+Lecture 14: OAuth terminologies anf flows explained
+1. Resource (Protected Resource) E.g Google Drive Photos
+2. Resource Owner (Person whose photos are on google drive)
+	An entity capable of granting access to a protected resource.
+3. Resource Server (Google Drive is resource server)
+	The server hosting the protected resources.
+4. Client (Photo printing service)
+	An application making protected resource requests on behalf of the resource owner and with its authorization
+5. Authorization Server
+	The server issuing access token to the client
+
+Flow 1: Authorization Code Flow
+
+	----------------------------------->	Photo Printing Service
+	|				1					(CLIENT)		|
+	|								  Token	|	^	|
+	|							2	(5)Access	|	|	|
+Resource				------------------------------	|	|API Call (Access Token)								
+Owner				|	------------------------------	|		
+	^				|	|		Auth Token 4			|
+	|				|	|							V	
+	|				v	|
+	|	3		Authorization       			Google Drive
+	-------------		Server					Resource Server
+
+	
+Flow 2: Implicit Flow
+	Shared Access Token directly with with client (short lived access tokens).
+Flow 3: Big Use Case :- *Authorization between microservices
+	Client Credentials Flow
+
+Lecture 15: Implementing login with Facebook and Github from scratch
+-> Spring Security App making OAuth call to Google.
+-> Receiving the user details saving it to SecurityContext (accounts User is Authenticated).
+-> Spring Initializer io.javabrains Login 
+-> Web Dependency
+	Spring Web
+	Spring Security
+	spring-security-oauth2-configure
 
 
 
@@ -321,3 +734,114 @@ Double Shift -> To search for all classes
 5. Manually Configuring the SecurityConfiguration Class
 6. Testing spring security using POSTMAN -> Basic authentication
 7. Spring Boot Version 2.7.4
+-----------------------------------------------------------------------------------------------
+Bavesh Application Decode
+
+Models 
+	-> User (id, username, email, password, roles)
+package com.bhavesh.spring.login.models;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+@Entity
+@Table(name = "users",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = "username"),
+           @UniqueConstraint(columnNames = "email")
+       })
+public class User {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @NotBlank
+  @Size(max = 20)
+  private String username;
+  @NotBlank
+  @Size(max = 50)
+  @Email
+  private String email;
+  @NotBlank
+  @Size(max = 120)
+  private String password;
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "user_roles", 
+             joinColumns = @JoinColumn(name = "user_id"),
+             inverseJoinColumns = @JoinColumn(name = "role_id"))
+  private Set<Role> roles = new HashSet<>();
+  public User() {
+  }
+  public User(String username, String email, String password) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+  }
+  public Long getId() {
+    return id;
+  }
+  public void setId(Long id) {
+    this.id = id;
+  }
+  public String getUsername() {
+    return username;
+  }
+  public void setUsername(String username) {
+    this.username = username;
+  }
+  public String getEmail() {
+    return email;
+  }
+  public void setEmail(String email) {
+    this.email = email;
+  }
+  public String getPassword() {
+    return password;
+  }
+  public void setPassword(String password) {
+    this.password = password;
+  }
+  public Set<Role> getRoles() {
+    return roles;
+  }
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
+  }
+}
+
+	-> Role (id, erole) 
+package com.bhavesh.spring.login.models;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "roles")
+public class Role {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+  @Enumerated(EnumType.STRING)
+  @Column(length = 20)
+  private ERole name;
+  public Role() {
+  }
+  public Role(ERole name) {
+    this.name = name;
+  }
+  public Integer getId() {
+    return id;
+  }
+  public void setId(Integer id) {
+    this.id = id;
+  }
+  public ERole getName() {
+    return name;
+  }
+  public void setName(ERole name) {
+    this.name = name;
+  }
+}

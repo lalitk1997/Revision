@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Dec 24 21:32:39 IST 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0185-44df-3c2c-000001e53910 
+on database directory memory:C:\Users\lalit\OneDrive\Desktop\Revision\JUnit 5\Lec-1\JUnit\JUnit\a27e9cbe-4f57-4616-82a7-f366e31326ed with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@4d7e1886 
+Loaded from file:/C:/Users/lalit/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=19.0.1+10-21
+user.dir=C:\Users\lalit\OneDrive\Desktop\Revision\JUnit 5\Lec-1\JUnit\JUnit
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
